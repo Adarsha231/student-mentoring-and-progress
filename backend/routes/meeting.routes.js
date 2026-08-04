@@ -5,7 +5,6 @@ const Student = require('../models/Student');
 const Mentor = require('../models/Mentor');
 const Notification = require('../models/Notification');
 const { protect } = require('../middleware/authMiddleware');
-const { sendMeetingScheduledEmail } = require('../services/emailService');
 
 // @route   GET /api/meetings
 // @desc    Get meetings for current logged in user (Mentor or Student)
@@ -80,19 +79,6 @@ router.post('/', protect, async (req, res) => {
         message: `Your mentor scheduled a session for ${date} at ${time} (${mode}).`,
         type: 'MEETING_SCHEDULED',
         link: '/dashboard'
-      });
-
-      // Send Gmail Notification to Mentee!
-      sendMeetingScheduledEmail({
-        menteeEmail: studentDoc.userId.email,
-        menteeName: studentDoc.userId.name,
-        mentorName: mentorDoc?.userId?.name || 'Faculty Mentor',
-        date,
-        time,
-        mode,
-        meetingLink: meeting.meetingLink,
-        title: meeting.title,
-        agenda: meeting.agenda
       });
     } else if (req.user.role === 'STUDENT' && mentorDoc && mentorDoc.userId) {
       await Notification.create({
