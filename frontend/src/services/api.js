@@ -20,6 +20,8 @@ export const authAPI = {
   getMe: () => API.get('/auth/me'),
   getDemoAccounts: () => API.get('/auth/demo-accounts'),
   updateProfile: (data) => API.put('/auth/profile', data),
+  sendVerificationOtp: () => API.post('/auth/send-verification-otp'),
+  verifyOtp: (otp) => API.post('/auth/verify-otp', { otp }),
 };
 
 export const adminAPI = {

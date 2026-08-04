@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Student = require('../models/Student');
 const Mentor = require('../models/Mentor');
 const { protect, JWT_SECRET } = require('../middleware/authMiddleware');
+const { sendVerificationOtpEmail } = require('../services/emailService');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
@@ -55,6 +56,7 @@ router.post('/login', async (req, res) => {
         department: user.department,
         avatar: user.avatar,
         phone: user.phone,
+        isEmailVerified: user.isEmailVerified || false,
         roleProfile,
         token: generateToken(user._id)
       });
@@ -91,6 +93,7 @@ router.get('/me', protect, async (req, res) => {
       department: user.department,
       avatar: user.avatar,
       phone: user.phone,
+      isEmailVerified: user.isEmailVerified || false,
       roleProfile
     });
   } catch (error) {
@@ -173,8 +176,82 @@ router.put('/profile', protect, async (req, res) => {
       department: user.department,
       avatar: user.avatar,
       phone: user.phone,
+      isEmailVerified: user.isEmailVerified,
       roleProfile,
       message: 'Profile updated successfully!'
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   POST /api/auth/send-verification-otp
+// @desc    Send 6-digit Gmail verification OTP
+router.post('/send-verification-otp', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.json({ message: 'Your Gmail address is already verified!', isEmailVerified: true });
+    }
+
+    // Generate 6-digit OTP code
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.emailVerificationOtp = otp;
+    user.emailVerificationExpires = Date.now() + 10 * 60 * 1000; // 10 minutes expiry
+    await user.save();
+
+    const mailResult = await sendVerificationOtpEmail({
+      email: user.email,
+      name: user.name,
+      otp
+    });
+
+    res.json({
+      message: `Verification OTP sent to ${user.email}`,
+      simulatedOtp: mailResult.simulated ? otp : undefined
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// @route   POST /api/auth/verify-otp
+// @desc    Verify submitted 6-digit Gmail verification OTP
+router.post('/verify-otp', protect, async (req, res) => {
+  try {
+    const { otp } = req.body;
+    if (!otp) {
+      return res.status(400).json({ message: 'Please enter the 6-digit OTP code.' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.json({ message: 'Your Gmail address is already verified!', isEmailVerified: true });
+    }
+
+    if (!user.emailVerificationOtp || user.emailVerificationOtp !== otp.trim()) {
+      return res.status(400).json({ message: 'Invalid verification code. Please check and try again.' });
+    }
+
+    if (user.emailVerificationExpires && user.emailVerificationExpires < Date.now()) {
+      return res.status(400).json({ message: 'Verification code has expired. Please request a new code.' });
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationOtp = '';
+    await user.save();
+
+    res.json({
+      message: '🎉 Congratulations! Your Gmail address has been verified successfully!',
+      isEmailVerified: true
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
