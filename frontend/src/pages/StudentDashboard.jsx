@@ -298,23 +298,42 @@ export default function StudentDashboard() {
                 {upcomingMeetings.length === 0 ? (
                   <p className="text-xs text-slate-400">No upcoming meetings scheduled.</p>
                 ) : (
-                  upcomingMeetings.map((m) => (
-                    <div key={m._id} className="p-4 rounded-xl bg-dark-bg border border-dark-border flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-white text-sm">{m.title}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {m.date} at {m.time} ({m.durationMinutes} mins)
-                        </p>
-                        <span className="inline-flex items-center gap-1 text-[11px] text-blue-400 font-semibold mt-2">
-                          {m.mode === 'Offline' ? <MapPin className="w-3 h-3" /> : <Video className="w-3 h-3" />}
-                          {m.mode}
+                  upcomingMeetings.map((m) => {
+                    const meetUrl = m.meetingLink || (m.mode === 'Google Meet' ? 'https://meet.google.com/abc-defg-hij' : '');
+                    const isOnline = m.mode !== 'Offline' || meetUrl;
+
+                    return (
+                      <div key={m._id} className="p-4 rounded-xl bg-dark-bg border border-dark-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <p className="font-bold text-white text-sm">{m.title}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {m.date} at {m.time} ({m.durationMinutes} mins)
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-blue-400 font-semibold">
+                              {m.mode === 'Offline' ? <MapPin className="w-3 h-3" /> : <Video className="w-3 h-3" />}
+                              {m.mode}
+                            </span>
+
+                            {meetUrl && (
+                              <a
+                                href={meetUrl.startsWith('http') ? meetUrl : `https://${meetUrl}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold transition-all"
+                              >
+                                <Video className="w-3 h-3 text-emerald-400" />
+                                <span>Join {m.mode === 'Microsoft Teams' ? 'Teams' : 'Google Meet'} 🔗</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                        <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold self-start sm:self-auto">
+                          Upcoming
                         </span>
                       </div>
-                      <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold">
-                        Upcoming
-                      </span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

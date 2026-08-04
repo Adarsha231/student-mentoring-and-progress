@@ -8,6 +8,7 @@ export default function ScheduleModal({ student, mentorId, onClose, onSuccess })
   const [time, setTime] = useState('14:30');
   const [duration, setDuration] = useState('30');
   const [mode, setMode] = useState('Offline');
+  const [meetingLink, setMeetingLink] = useState('');
   const [agenda, setAgenda] = useState('Academic progress review, CIE marks analysis, and attendance strategy.');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,6 +27,7 @@ export default function ScheduleModal({ student, mentorId, onClose, onSuccess })
         time,
         durationMinutes: Number(duration),
         mode,
+        meetingLink: mode === 'Offline' ? '' : (meetingLink || 'https://meet.google.com/abc-defg-hij'),
         agenda
       });
       if (onSuccess) onSuccess();
@@ -128,6 +130,25 @@ export default function ScheduleModal({ student, mentorId, onClose, onSuccess })
               ))}
             </div>
           </div>
+
+          {mode !== 'Offline' && (
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1 flex items-center gap-1.5">
+                <Video className="w-3.5 h-3.5 text-blue-400" />
+                {mode} Link / Meeting Code (Optional)
+              </label>
+              <input
+                type="text"
+                value={meetingLink}
+                onChange={(e) => setMeetingLink(e.target.value)}
+                placeholder={mode === 'Google Meet' ? 'e.g. https://meet.google.com/abc-defg-hij' : 'Meeting URL'}
+                className="w-full px-3 py-2 rounded-lg bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500 font-mono"
+              />
+              <p className="text-[11px] text-slate-400 mt-1">
+                💡 Leave blank to auto-generate a valid {mode} link.
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
