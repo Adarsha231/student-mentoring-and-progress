@@ -93,6 +93,7 @@ router.get('/mentors', async (req, res) => {
 router.post('/mentors', async (req, res) => {
   try {
     const dept = getAdminDept(req);
+    const { name, email, password, phone, employeeId, designation, maxMentees } = req.body;
     const mentorEmail = email ? email.trim().toLowerCase() : '';
     if (!mentorEmail) {
       return res.status(400).json({ message: 'Mentor email is required' });
