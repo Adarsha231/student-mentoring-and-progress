@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { GraduationCap, Shield, UserCheck, BookOpen, ArrowRight, Sparkles, CheckCircle2, User, Lock } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@mentoring.edu');
-  const [password, setPassword] = useState('AdminPassword123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [activeRole, setActiveRole] = useState('ADMIN'); // 'ADMIN' | 'MENTOR' | 'STUDENT'
 
   const [ripples, setRipples] = useState([]);
@@ -32,10 +32,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleRoleSelect = (roleKey, userEmail, userPass, e) => {
+  const handleRoleSelect = (roleKey, userEmail, e) => {
     setActiveRole(roleKey);
     setEmail(userEmail);
-    setPassword(userPass);
+    setPassword(''); // Keep password empty for security
 
     // Create ripple effect at click coordinates
     if (e && e.currentTarget) {
@@ -105,21 +105,18 @@ export default function LoginPage() {
       name: 'Admin',
       icon: Shield,
       email: 'admin@mentoring.edu',
-      pass: 'AdminPassword123!',
     },
     {
       key: 'MENTOR',
       name: 'Mentor',
       icon: UserCheck,
       email: 'mentor1@mentoring.edu',
-      pass: 'mentor1@mentoring.edu',
     },
     {
       key: 'STUDENT',
       name: 'Student',
       icon: BookOpen,
       email: '1MS22CS001',
-      pass: '1MS22CS001',
     },
   ];
 
@@ -179,7 +176,7 @@ export default function LoginPage() {
                   <button
                     key={r.key}
                     type="button"
-                    onClick={(e) => handleRoleSelect(r.key, r.email, r.pass, e)}
+                    onClick={(e) => handleRoleSelect(r.key, r.email, e)}
                     className={`relative overflow-hidden p-3 rounded-xl border transition-all duration-300 flex flex-col items-center justify-center text-center group active:scale-95 ${
                       isSelected ? theme.activeTab : theme.inactiveTab
                     }`}
