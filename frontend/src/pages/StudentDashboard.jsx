@@ -299,7 +299,7 @@ export default function StudentDashboard() {
                   <p className="text-xs text-slate-400">No upcoming meetings scheduled.</p>
                 ) : (
                   upcomingMeetings.map((m) => {
-                    const meetUrl = m.meetingLink || (m.mode === 'Google Meet' ? 'https://meet.google.com/new' : '');
+                    const meetUrl = m.meetingLink ? m.meetingLink.trim() : '';
                     const isOnline = m.mode !== 'Offline' || meetUrl;
 
                     return (

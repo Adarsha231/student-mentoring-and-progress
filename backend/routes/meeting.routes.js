@@ -62,7 +62,7 @@ router.post('/', protect, async (req, res) => {
       time,
       durationMinutes: Number(durationMinutes) || 30,
       mode: mode || 'Offline',
-      meetingLink: meetingLink || (mode === 'Google Meet' ? 'https://meet.google.com/new' : mode === 'Microsoft Teams' ? 'https://teams.microsoft.com/l/meetup' : ''),
+      meetingLink: meetingLink || '',
       agenda: agenda || '',
       status: 'Upcoming',
       requestedBy: req.user.role === 'STUDENT' ? 'STUDENT' : 'MENTOR'
