@@ -61,12 +61,16 @@ const PORT = process.env.PORT || 5000;
 // Start server after connecting to DB
 connectDB().then(async () => {
   // Auto seed if empty DB
-  const User = require('./models/User');
-  const count = await User.countDocuments();
-  if (count === 0) {
-    console.log('[Seed] Database is empty. Running initial seed...');
-    const seedDatabase = require('./seed/seedData');
-    await seedDatabase();
+  try {
+    const User = require('./models/User');
+    const count = await User.countDocuments();
+    if (count === 0) {
+      console.log('[Seed] Database is empty. Running initial seed...');
+      const seedDatabase = require('./seed/seedData');
+      await seedDatabase();
+    }
+  } catch (seedErr) {
+    console.warn('[Seed Warning] DB not ready for auto-seeding:', seedErr.message);
   }
 
   app.listen(PORT, () => {

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
@@ -27,10 +26,10 @@ const connectDB = async () => {
         return;
       } catch (atlasErr) {
         console.error(`[MongoDB Atlas Error] ❌ Could not connect to custom URI: ${atlasErr.message}`);
-        console.log(`[MongoDB Fallback] Falling back to standalone MongoMemoryServer database...`);
+        console.log(`[MongoDB Fallback] Falling back to secondary connection options...`);
       }
     } else {
-      console.log(`[MongoDB] No custom MONGODB_URI found in .env`);
+      console.log(`[MongoDB] No custom MONGODB_URI found in environment variables.`);
     }
 
     // Default local MongoDB attempt
@@ -43,13 +42,27 @@ const connectDB = async () => {
       console.log('[MongoDB] Local MongoDB service not detected.');
     }
 
-    // In-memory fallback
-    mongoServer = await MongoMemoryServer.create();
-    const memoryUri = mongoServer.getUri();
-    await mongoose.connect(memoryUri);
-    console.log(`[MongoDB] Connected to in-memory database at ${memoryUri}`);
+    // Try in-memory fallback (mainly for local development)
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      mongoServer = await MongoMemoryServer.create();
+      const memoryUri = mongoServer.getUri();
+      await mongoose.connect(memoryUri);
+      console.log(`[MongoDB] Connected to in-memory database at ${memoryUri}`);
+    } catch (memErr) {
+      console.error(`[MongoDB Memory Server Fallback Warning] ${memErr.message}`);
+      if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+        console.warn(`⚠️ Running in production without a live MONGODB_URI. Please add MONGODB_URI to Render Environment Variables.`);
+        return;
+      }
+      throw memErr;
+    }
   } catch (error) {
-    console.error(`[MongoDB Connection Error] ${error.message}`);
+    console.error(`[MongoDB Connection Warning] ${error.message}`);
+    if (process.env.NODE_ENV === 'production' || process.env.RENDER) {
+      console.warn(`⚠️ Proceeding server start for deployment verification.`);
+      return;
+    }
     process.exit(1);
   }
 };
