@@ -32,10 +32,10 @@ export default function LoginPage() {
     }
   };
 
-  const handleRoleSelect = (roleKey, userEmail, e) => {
+  const handleRoleSelect = (roleKey, e) => {
     setActiveRole(roleKey);
-    setEmail(userEmail);
-    setPassword(''); // Keep password empty for security
+    setEmail('');
+    setPassword('');
 
     // Create ripple effect at click coordinates
     if (e && e.currentTarget) {
@@ -148,7 +148,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-white">Sign in to your account</h2>
-              <p className="text-xs text-slate-400">Select your role to auto-fill demo credentials</p>
+              <p className="text-xs text-slate-400">Select your portal role and enter your credentials</p>
             </div>
             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border ${currentTheme.badgeBg} flex items-center gap-1 transition-all duration-300 animate-pulse-subtle`}>
               <Sparkles className="w-3 h-3" />
@@ -176,7 +176,7 @@ export default function LoginPage() {
                   <button
                     key={r.key}
                     type="button"
-                    onClick={(e) => handleRoleSelect(r.key, r.email, e)}
+                    onClick={(e) => handleRoleSelect(r.key, e)}
                     className={`relative overflow-hidden p-3 rounded-xl border transition-all duration-300 flex flex-col items-center justify-center text-center group active:scale-95 ${
                       isSelected ? theme.activeTab : theme.inactiveTab
                     }`}
@@ -229,7 +229,7 @@ export default function LoginPage() {
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. 1MS22CS001 or mentor1@mentoring.edu"
+                placeholder=""
                 className={`w-full px-4 py-2.5 rounded-xl bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500 transition-all uppercase ${
                   fieldFlash ? 'animate-field-pulse border-blue-400 ring-2 ring-blue-400/30' : ''
                 }`}
@@ -246,7 +246,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password (USN for students)"
+                placeholder=""
                 className={`w-full px-4 py-2.5 rounded-xl bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500 transition-all ${
                   fieldFlash ? 'animate-field-pulse border-blue-400 ring-2 ring-blue-400/30' : ''
                 }`}
