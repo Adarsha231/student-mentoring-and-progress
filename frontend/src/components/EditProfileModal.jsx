@@ -7,6 +7,7 @@ export default function EditProfileModal({ onClose }) {
   const { user, updateUserState } = useAuth();
   
   const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -42,6 +43,7 @@ export default function EditProfileModal({ onClose }) {
     try {
       const payload = {
         name,
+        email,
         phone,
       };
 
@@ -55,6 +57,7 @@ export default function EditProfileModal({ onClose }) {
       if (updateUserState) {
         updateUserState({
           name: res.data.name,
+          email: res.data.email,
           phone: res.data.phone
         });
       }
@@ -140,18 +143,23 @@ export default function EditProfileModal({ onClose }) {
                 className="w-full px-3.5 py-2.5 rounded-xl bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500 transition-all"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                {isStudent ? 'USN / Student ID' : 'Email Address'}
-              </label>
-              <input
-                type="text"
-                value={isStudent ? (user?.roleProfile?.usn || user?.email) : user?.email}
-                disabled
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-dark-border/60 text-slate-400 text-sm cursor-not-allowed font-mono"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              Gmail Address (For Session Notifications)
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e.g. student@gmail.com"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500 transition-all font-mono"
+              required
+            />
+            <p className="text-[11px] text-blue-400 mt-1">
+              📩 Mentor session notifications will be dispatched to this Gmail address.
+            </p>
           </div>
 
           {/* Divider */}

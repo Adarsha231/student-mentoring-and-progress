@@ -127,10 +127,14 @@ router.put('/profile', protect, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const { name, phone, currentPassword, newPassword } = req.body;
+    const { name, email, phone, currentPassword, newPassword } = req.body;
 
     if (name && name.trim()) {
       user.name = name.trim();
+    }
+
+    if (email && email.trim()) {
+      user.email = email.trim().toLowerCase();
     }
 
     if (phone !== undefined) {
@@ -167,10 +171,6 @@ router.put('/profile', protect, async (req, res) => {
       roleProfile = await Mentor.findOne({ userId: user._id });
     }
 
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
     res.json({
       _id: user._id,
       name: user.name,
