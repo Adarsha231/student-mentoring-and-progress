@@ -9,9 +9,6 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, default: '' },
   phone: { type: String, default: '' },
   department: { type: String, default: 'Computer Science & Engineering' },
-  isEmailVerified: { type: Boolean, default: false },
-  emailVerificationOtp: { type: String, default: '' },
-  emailVerificationExpires: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 

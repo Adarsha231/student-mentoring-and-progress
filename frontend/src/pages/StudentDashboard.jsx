@@ -28,19 +28,14 @@ import {
   Plus, 
   ShieldCheck,
   Layers,
-  GraduationCap,
-  MailCheck,
-  CheckCircle2
+  GraduationCap
 } from 'lucide-react';
-
-import EditProfileModal from '../components/EditProfileModal';
 
 export default function StudentDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
-  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
 
   const fetchStudentData = async () => {
     try {
@@ -113,21 +108,6 @@ export default function StudentDashboard() {
                   <ShieldCheck className="w-4 h-4" />
                   <span>Assigned Mentor: {student.mentorId.userId?.name} ({student.mentorId.department})</span>
                 </p>
-              )}
-
-              {student.userId?.isEmailVerified ? (
-                <div className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Gmail Verified
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowEditProfileModal(true)}
-                  className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[11px] font-semibold transition-all"
-                >
-                  <MailCheck className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Verify Gmail Address (Action Needed)</span>
-                </button>
               )}
             </div>
 
@@ -378,16 +358,6 @@ export default function StudentDashboard() {
           mentorId={student.mentorId?._id}
           onClose={() => setShowRequestModal(false)}
           onSuccess={fetchStudentData}
-        />
-      )}
-
-      {/* Edit Profile & Verify Gmail Modal */}
-      {showEditProfileModal && (
-        <EditProfileModal
-          onClose={() => {
-            setShowEditProfileModal(false);
-            fetchStudentData();
-          }}
         />
       )}
     </div>
