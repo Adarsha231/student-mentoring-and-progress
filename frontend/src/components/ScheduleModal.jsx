@@ -27,7 +27,7 @@ export default function ScheduleModal({ student, mentorId, onClose, onSuccess })
         time,
         durationMinutes: Number(duration),
         mode,
-        meetingLink: mode === 'Offline' ? '' : (meetingLink || 'https://meet.google.com/abc-defg-hij'),
+        meetingLink: mode === 'Offline' ? '' : (meetingLink || 'https://meet.google.com/new'),
         agenda
       });
       if (onSuccess) onSuccess();
