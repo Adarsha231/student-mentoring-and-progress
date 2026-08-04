@@ -584,6 +584,21 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <div>
+                <label className="block text-slate-300 font-semibold mb-1">Current Semester</label>
+                <select
+                  value={studentForm.semester}
+                  onChange={(e) => setStudentForm({ ...studentForm, semester: Number(e.target.value) })}
+                  className="w-full px-3 py-2 rounded-xl bg-dark-bg border border-dark-border text-white text-sm focus:outline-none focus:border-blue-500"
+                  required
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                    <option key={sem} value={sem}>
+                      Semester {sem}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
                 <label className="block text-slate-300 font-semibold mb-1">Email (Optional)</label>
                 <input
                   type="email"
