@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dark-bg text-slate-100 font-sans antialiased;
+  }
+}
+
+/* Custom scrollbar styling for modern sleek dark interface */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0F17;
+}
+::-webkit-scrollbar-thumb {
+  background: #263044;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* Glassmorphism styling */
+.glass-panel {
+  background: rgba(20, 26, 38, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 54, 79, 0.6);
+}
+
+.glass-card {
+  background: rgba(27, 36, 51, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(42, 54, 79, 0.5);
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Role click ripple animation */
+@keyframes roleRipple {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.6;
+  }
+  100% {
+    width: 320px;
+    height: 320px;
+    opacity: 0;
+  }
+}
+
+.role-ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: roleRipple 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+/* Input field glow pulse animation on role click */
+@keyframes inputHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px rgba(59, 130, 246, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.animate-field-pulse {
+  animation: inputHighlightPulse 0.5s ease-in-out;
+}
+
