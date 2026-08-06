@@ -8,20 +8,25 @@ const Meeting = require('../models/Meeting');
 const MentorNote = require('../models/MentorNote');
 const { protect } = require('../middleware/authMiddleware');
 
+const { syncStudentAcademicMetrics } = require('../utils/riskEngine');
+
 // @route   GET /api/students/:id/profile
 // @desc    Get detailed student academic & mentoring profile
 router.get('/:id/profile', protect, async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id)
+    let student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student profile not found' });
+    }
+
+    await syncStudentAcademicMetrics(student);
+
+    student = await Student.findById(req.params.id)
       .populate('userId', 'name email phone avatar department')
       .populate({
         path: 'mentorId',
         populate: { path: 'userId', select: 'name email phone avatar department' }
       });
-
-    if (!student) {
-      return res.status(404).json({ message: 'Student profile not found' });
-    }
 
     const attendanceRecords = await Attendance.find({ studentId: student._id });
     const marksRecords = await Marks.find({ studentId: student._id }).sort({ semester: -1, subjectCode: 1 });

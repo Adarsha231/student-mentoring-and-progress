@@ -113,7 +113,65 @@ async function checkAndGenerateAlerts(student, mentor, attendancePct, marksData,
   }
 }
 
+/**
+ * Synchronizes a student's avgCieMarks and riskLevel from their actual Marks, Attendance, & Assignment collections
+ */
+async function syncStudentAcademicMetrics(studentId) {
+  const Student = require('../models/Student');
+  const Marks = require('../models/Marks');
+  const Attendance = require('../models/Attendance');
+  const Assignment = require('../models/Assignment');
+
+  const student = typeof studentId === 'object' ? studentId : await Student.findById(studentId);
+  if (!student) return null;
+
+  // 1. Calculate actual average CIE marks for current semester
+  const currentMarks = await Marks.find({ studentId: student._id, semester: student.semester });
+  let avgCieMarks = student.avgCieMarks || 0;
+  if (currentMarks && currentMarks.length > 0) {
+    const sumCie = currentMarks.reduce((sum, m) => sum + (m.averageMarks || 0), 0);
+    avgCieMarks = Math.round(sumCie / currentMarks.length);
+  } else if (avgCieMarks > 50) {
+    avgCieMarks = Math.round((avgCieMarks / 100) * 50);
+  }
+
+  // Cap at 50 max
+  avgCieMarks = Math.min(50, Math.max(0, avgCieMarks));
+
+  // 2. Attendance
+  const attendanceRecords = await Attendance.find({ studentId: student._id });
+  let overallAttPct = student.overallAttendance || 0;
+  if (attendanceRecords && attendanceRecords.length > 0) {
+    const totalAttended = attendanceRecords.reduce((sum, a) => sum + (a.attendedClasses || 0), 0);
+    const totalClasses = attendanceRecords.reduce((sum, a) => sum + (a.totalClasses || 0), 0);
+    if (totalClasses > 0) {
+      overallAttPct = Math.round((totalAttended / totalClasses) * 100);
+    }
+  }
+
+  // 3. Assignment Completion
+  const assignmentRecords = await Assignment.find({ studentId: student._id });
+  let assignCompPct = student.assignmentCompletionRate || 0;
+  if (assignmentRecords && assignmentRecords.length > 0) {
+    const completed = assignmentRecords.filter(a => a.status === 'Submitted' || a.status === 'Graded').length;
+    assignCompPct = Math.round((completed / assignmentRecords.length) * 100);
+  }
+
+  // 4. Calculate Risk Level based on actual metrics
+  const newRiskLevel = calculateRiskLevel(overallAttPct, avgCieMarks, assignCompPct);
+
+  // 5. Update Student Document
+  student.avgCieMarks = avgCieMarks;
+  student.riskLevel = newRiskLevel;
+  student.overallAttendance = overallAttPct;
+  student.assignmentCompletionRate = assignCompPct;
+  await student.save();
+
+  return student;
+}
+
 module.exports = {
   calculateRiskLevel,
-  checkAndGenerateAlerts
+  checkAndGenerateAlerts,
+  syncStudentAcademicMetrics
 };

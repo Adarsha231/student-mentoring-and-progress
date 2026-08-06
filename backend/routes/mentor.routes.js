@@ -20,6 +20,8 @@ const getMentorDoc = async (req) => {
   return await Mentor.findOne();
 };
 
+const { syncStudentAcademicMetrics } = require('../utils/riskEngine');
+
 // @route   GET /api/mentor/dashboard
 // @desc    Get Mentor Dashboard summary & risk metrics
 router.get('/dashboard', async (req, res) => {
@@ -28,6 +30,10 @@ router.get('/dashboard', async (req, res) => {
     if (!mentor) {
       return res.status(404).json({ message: 'Mentor profile not found' });
     }
+
+    // Dynamically sync metrics for all assigned mentees
+    const mentees = await Student.find({ mentorId: mentor._id });
+    await Promise.all(mentees.map(s => syncStudentAcademicMetrics(s)));
 
     const totalStudents = await Student.countDocuments({ mentorId: mentor._id });
     const highRisk = await Student.countDocuments({ mentorId: mentor._id, riskLevel: 'HIGH' });
@@ -74,6 +80,10 @@ router.get('/students', async (req, res) => {
     if (!mentor) {
       return res.status(404).json({ message: 'Mentor profile not found' });
     }
+
+    // Sync all mentees before filtering
+    const mentees = await Student.find({ mentorId: mentor._id });
+    await Promise.all(mentees.map(s => syncStudentAcademicMetrics(s)));
 
     const { search, department, semester, riskLevel, minAttendance } = req.query;
     let query = { mentorId: mentor._id };

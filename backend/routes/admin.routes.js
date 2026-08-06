@@ -131,6 +131,8 @@ router.post('/mentors', async (req, res) => {
   }
 });
 
+const { syncStudentAcademicMetrics } = require('../utils/riskEngine');
+
 // @route   GET /api/admin/students
 // @desc    Get all students belonging strictly to HOD's department
 router.get('/students', async (req, res) => {
@@ -143,6 +145,8 @@ router.get('/students', async (req, res) => {
         populate: { path: 'userId', select: 'name email' }
       })
       .sort({ usn: 1 });
+
+    await Promise.all(students.map(s => syncStudentAcademicMetrics(s)));
 
     res.json(students);
   } catch (error) {

@@ -6,10 +6,16 @@ const Marks = require('../models/Marks');
 const Attendance = require('../models/Attendance');
 const { protect } = require('../middleware/authMiddleware');
 
+const { syncStudentAcademicMetrics } = require('../utils/riskEngine');
+
 // @route   GET /api/analytics/overview
 // @desc    Get aggregated charts & analytics data for visual charts
 router.get('/overview', protect, async (req, res) => {
   try {
+    // Sync metrics for accuracy
+    const students = await Student.find();
+    await Promise.all(students.map(s => syncStudentAcademicMetrics(s)));
+
     // 1. Risk Distribution
     const highRisk = await Student.countDocuments({ riskLevel: 'HIGH' });
     const mediumRisk = await Student.countDocuments({ riskLevel: 'MEDIUM' });

@@ -298,9 +298,25 @@ async function seedDatabase() {
           maxScore: 50
         });
       });
+
+      // Recalculate student's avgCieMarks & riskLevel directly from actual current semester subject marks
+      if (s === sem) {
+        const currentSemMarks = marksToCreate.filter(m => String(m.studentId) === String(studentId) && m.semester === sem);
+        const actualAvgCie = currentSemMarks.length > 0
+          ? Math.round(currentSemMarks.reduce((sum, m) => sum + m.averageMarks, 0) / currentSemMarks.length)
+          : Math.min(50, Math.round((cieAvg / 100) * 50));
+        const actualRiskLevel = calculateRiskLevel(attPct, actualAvgCie, assignCompPct);
+
+        const sDoc = studentDocsToCreate.find(d => String(d._id) === String(studentId));
+        if (sDoc) {
+          sDoc.avgCieMarks = actualAvgCie;
+          sDoc.riskLevel = actualRiskLevel;
+        }
+      }
     }
 
-    if (calculatedRisk === 'HIGH') {
+    const finalStudentDoc = studentDocsToCreate.find(d => String(d._id) === String(studentId));
+    if (finalStudentDoc && finalStudentDoc.riskLevel === 'HIGH') {
       alertsToCreate.push({
         studentId,
         mentorId: assignedMentor._id,
