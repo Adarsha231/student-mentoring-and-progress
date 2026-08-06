@@ -55,7 +55,7 @@ You can test all three roles out of the box using these credentials:
 
 | Role | Username / Email | Password | Access Level |
 | :--- | :--- | :--- | :--- |
-| **Admin (HOD)** | `admin@mentoring.edu` | `AdminPassword123!` | Full Department Control |
+| **Admin (HOD)** | `admin@mentoring.edu` | `ADMIN@123` | Full Department Control |
 | **Mentor** | `mentor1@mentoring.edu` | `mentor1@mentoring.edu` | Assigned Mentees & Scheduler |
 | **Student** | `1MS22CS001` | `1MS22CS001` | Personal Dashboard & Meetings |
 
@@ -151,6 +151,7 @@ student-mentoring-and-progress/
 ---
 
 ## 🌐 Live Cloud Deployment (Render.com)
+🚀 **Live Demo:** https://student-mentoring-and-progress.onrender.com
 
 1. Push code to GitHub repository:
    ```bash
