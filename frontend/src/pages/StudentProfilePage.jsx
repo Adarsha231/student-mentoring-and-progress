@@ -204,7 +204,9 @@ export default function StudentProfilePage() {
               </div>
               <div>
                 <p className="text-[10px] uppercase font-semibold text-slate-400">Avg CIE</p>
-                <p className="text-lg font-bold text-blue-400">{student.avgCieMarks} / 50</p>
+                <p className="text-lg font-bold text-blue-400">
+                  {student.avgCieMarks > 50 ? Math.round((student.avgCieMarks / 100) * 50) : student.avgCieMarks} / 50
+                </p>
               </div>
               <div>
                 <p className="text-[10px] uppercase font-semibold text-slate-400">Assignments</p>

@@ -131,7 +131,7 @@ export default function StudentDashboard() {
             />
             <StatCard
               title="Average CIE Score"
-              value={`${student.avgCieMarks} / 50`}
+              value={`${student.avgCieMarks > 50 ? Math.round((student.avgCieMarks / 100) * 50) : student.avgCieMarks} / 50`}
               icon={Award}
               color="blue"
               subtitle="Current Semester CIE Average"

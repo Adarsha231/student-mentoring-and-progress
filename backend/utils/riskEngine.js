@@ -19,10 +19,12 @@ function calculateRiskLevel(attendancePct, avgMarks, assignmentCompletionPct) {
   if (attendancePct < 60) attendanceRisk = 'HIGH';
   else if (attendancePct <= 75) attendanceRisk = 'MEDIUM';
 
-  // Marks risk tier
+  // Marks risk tier (normalize marks if provided out of 50)
+  const marksPct = (avgMarks != null && avgMarks <= 50) ? (avgMarks / 50) * 100 : (avgMarks || 0);
+
   let marksRisk = 'LOW';
-  if (avgMarks < 40) marksRisk = 'HIGH';
-  else if (avgMarks <= 70) marksRisk = 'MEDIUM';
+  if (marksPct < 40) marksRisk = 'HIGH';
+  else if (marksPct <= 70) marksRisk = 'MEDIUM';
 
   // Determine base risk as worst of the two
   const severityRank = { LOW: 1, MEDIUM: 2, HIGH: 3 };

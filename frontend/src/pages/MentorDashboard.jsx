@@ -265,11 +265,14 @@ export default function MentorDashboard() {
 
                         {/* Avg CIE */}
                         <td className="py-3.5 px-4 text-center">
-                          <span className={`font-bold text-xs ${
-                            student.avgCieMarks < 25 ? 'text-rose-400' : 'text-blue-300'
-                          }`}>
-                            {student.avgCieMarks} / 50
-                          </span>
+                          {(() => {
+                            const cieVal = student.avgCieMarks > 50 ? Math.round((student.avgCieMarks / 100) * 50) : student.avgCieMarks;
+                            return (
+                              <span className={`font-bold text-xs ${cieVal < 25 ? 'text-rose-400' : 'text-blue-300'}`}>
+                                {cieVal} / 50
+                              </span>
+                            );
+                          })()}
                         </td>
 
                         {/* Assignments */}

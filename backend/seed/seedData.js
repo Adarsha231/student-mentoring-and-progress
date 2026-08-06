@@ -229,7 +229,7 @@ async function seedDatabase() {
       mentorId: assignedMentor._id,
       riskLevel: calculatedRisk,
       overallAttendance: attPct,
-      avgCieMarks: cieAvg,
+      avgCieMarks: Math.min(50, Math.round((cieAvg / 100) * 50)),
       assignmentCompletionRate: assignCompPct,
       lastMeetingDate: new Date(Date.now() - (i % 15) * 86400000)
     });
